@@ -26,8 +26,25 @@ docker exec -it kafka bash
 
 Create your topics:
 
+# PDF
 kafka-topics --create --topic pdf-operation --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
 kafka-topics --create --topic pdf-result --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+
+
+# Blog draft flow
+kafka-topics --create --topic blog-operation --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+
+kafka-topics --create --topic blog-operation-result --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+
+# Blog approval flow
+kafka-topics --create --topic blog-approval --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+
+# Blog media choosing flow
+kafka-topics --create --topic blog-mediachooser --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+
+# Final blog result
+kafka-topics --create --topic blog-result --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+
 
 
 Verify:
@@ -95,3 +112,14 @@ docker-compose down -v
 
 
 (-v wipes Kafka data, clean reset)
+
+
+
+
+
+
+
+
+
+
+now lets start with blog agent integration listen the architecture first my springboot application will do these sequentially 1. raise event "blog-operation" with payload as same as in startworkflow fucntion initial state python blog_operation file will listen for this event and prodduce event "blog-operation-result" with the blog and springboot service method will listen on this event to let know 2. raise event "blog-approval" with payload as approve_blog python blog_approval file will listen for this event 3. rasie event "blog-mediachooser" with payload as choosepostmedia python blog_mediachooser file will listen for this event and produce event "blog-result" with final blog posted my spring boot app will listen for this event and save the blog in databse

@@ -1,0 +1,14 @@
+langchain
+langchain-community
+langchain-core
+python-dotenv
+langchain-groq
+langgraph
+youtube_transcript_api
+graphviz
+fastapi
+sqlalchemy
+uvicorn
+langgraph-checkpoint-sqlite
+kafka
+aiokafka
