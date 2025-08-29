@@ -1,0 +1,97 @@
+✅ Step 1: Create docker-compose.yml
+
+In your project root (StudyCompanion/), create this file:
+
+✅ Step 2: Start Kafka
+
+Run:
+
+docker-compose up -d
+
+
+Check logs:
+
+docker logs -f kafka
+
+
+You should see something like:
+[KafkaServer id=1] started (kafka.server.KafkaServer)
+
+✅ Step 3: Create Topics
+
+Enter Kafka container:
+
+docker exec -it kafka bash
+
+
+Create your topics:
+
+kafka-topics --create --topic pdf-operation --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+kafka-topics --create --topic pdf-result --bootstrap-server localhost:9092 --partitions 1 --replication-factor 1
+
+
+Verify:
+
+kafka-topics --list --bootstrap-server localhost:9092
+
+✅ Step 4: Test Kafka (Optional)
+
+Producer (inside container):
+
+kafka-console-producer --topic pdf-operation --bootstrap-server localhost:9092
+
+
+Consumer (inside container, in another shell):
+
+kafka-console-consumer --topic pdf-operation --from-beginning --bootstrap-server localhost:9092
+
+
+Type something in producer, you should see it in consumer.
+
+✅ Step 5: Configure Your Apps
+FastAPI (Python)
+
+In consumer.py:
+
+KAFKA_BOOTSTRAP = "localhost:9092"
+PDF_OPERATION_TOPIC = "pdf-operation"
+PDF_RESULT_TOPIC = "pdf-result"
+
+Spring Boot (application.yml)
+spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: pdf-group
+      auto-offset-reset: earliest
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+✅ Step 6: Run Your Apps
+
+Start Kafka:
+
+docker-compose up -d
+
+
+Run FastAPI worker:
+
+python -m app.consumer
+
+
+Start Spring Boot app (mvn spring-boot:run or from IDE).
+
+Flow:
+
+Spring Boot → produce event "pdf-operation"
+
+FastAPI worker → consume, process, produce "pdf-result"
+
+Spring Boot → consume "pdf-result", send response to user
+
+✅ Step 7: Stop Kafka
+docker-compose down -v
+
+
+(-v wipes Kafka data, clean reset)
